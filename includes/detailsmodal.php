@@ -97,6 +97,7 @@ jQuery('#size').change(function(){
 		},500);
 	}
 
+
 	function add_to_cart() {
 		jQuery('#modal-errors').html("");
 		var size = jQuery('#size').val();

@@ -12,7 +12,7 @@
     'quantity' => $quantity,
   );
 
-$domain = ($_SERVER['HTTP_HOST'] != 'localhost')?'.'.$_SERVER['HTTP_HOST']:false;
+$domain = (($_SERVER['HTTP_HOST'] != 'localhost')?'.'.$_SERVER['HTTP_HOST']:false);
 $query = $db->query("SELECT * FROM products WHERE id = '{$product_id}'");
 $product = mysqli_fetch_assoc($query);
 $_SESSION['success_flash'] = $product['title'] . " was added to your cart.";

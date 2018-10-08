@@ -135,3 +135,6 @@ img.details {
 	top: 175px;
 	left: -25px;
 }
+.totals-table-header th {
+	text-align: center;
+}

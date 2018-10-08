@@ -53,6 +53,20 @@
 			});
 		});
 
+
+		function update_cart(mode, edit_id, edit_size){
+			var data = {"mode": mode, "edit_id": edit_id, "edit_size": edit_size };
+			jQuery.ajax({
+				url : '/my-php-shop/admin/parsers/update_cart.php',
+				method : 'post',
+				data : data,
+				success: function(){
+					location.reload();
+				},
+				error: function(){ alert("Something went wrong with the Cart.")}
+			});
+		}
+		
 		function detailsmodal(id) {
 			var data = { "id" : id};
 			// send data to detailsmodal.php
