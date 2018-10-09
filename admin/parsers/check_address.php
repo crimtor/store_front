@@ -33,6 +33,6 @@
   if(!empty($errors)){
     echo display_errors($errors);
   }else{
-
+		echo "passed";
   }
 ?>

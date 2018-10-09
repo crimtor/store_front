@@ -9,7 +9,7 @@
 	<!-- Styles -->
 	<link rel="stylesheet" href="css/bootstrap.min.css">
 	<link rel="stylesheet" href="css/main.css">
-	<script type="text/javascript" src="https://js.stripe.com/v2"></script>
+	<script src="https://js.stripe.com/v3/"></script>
 </head>
 
 <body>
