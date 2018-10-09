@@ -97,7 +97,8 @@
       <div class="modal-body">
         <div class="row">
           <form action="thankyou.php" method="post" id="payment-form">
-            <div id="step1" style="display:block;">
+						<span class="bg-danger" id="payment-errors"></span>
+						<div id="step1" style="display:block;">
               <div class="form-group col-md-6">
                 <label for="full-name">Full Name: </label>
                 <input type="text" class="form-control" id="full-name" name="full-name">
@@ -131,16 +132,49 @@
                 <input type="text" class="form-control" id="country" name="country">
               </div>
             </div>
-            <div id="step2" style="display:none;"></div>
-          </form>
+            <div id="step2" style="display:none;">
+							<div class="form-group col-md-3">
+								<label for="card-name">Name on Card: </label>
+								<input type="text" id="card-name" class="form-control">
+							</div>
+							<div class="form-group col-md-3">
+								<label for="card-number">Card Number: </label>
+								<input type="text" id="card-num" class="form-control">
+							</div>
+							<div class="form-group col-md-3">
+								<label for="card-cvc">CVC on back of Card: </label>
+								<input type="text" id="card-cvc" class="form-control">
+							</div>
+							<div class="form-group col-md-3">
+								<label for="card-month">Expiration Month: </label>
+								<select id="card-month" class="form-control">
+									<option value=""></option>
+									<?php for($i=1;$i < 13;$i++): ?>
+										<option value="<?=$i;?>"><?=$i;?></option>
+									<?php endfor; ?>
+								</select>
+							</div>
+							<div class="form-group col-md-3">
+								<label for="card-year">Expiration Year: </label>
+								<select id="card-year" class="form-control">
+									<option value=""></option>
+									<?php for($i=2018;$i < 2025;$i++): ?>
+										<option value="<?=$i;?>"><?=$i;?></option>
+									<?php endfor; ?>
+								</select>
+							</div>
+						</div>
+
         </div>
       </div>
 
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-        <button type="button" class="btn btn-primary">Save changes</button>
+        <button type="button" id="back_button" class="btn btn-primary" style="display:none;" onclick="back_address();"> Back </button>
+				<button type="button" id="next_button" class="btn btn-primary" onclick="check_address();"> Next </button>
+				<button type="submit" id="checkout_button" class="btn btn-primary" style="display:none;"> Check Out </button>
       </div>
-
+			</form>
     </div>
   </div>
 </div>
@@ -148,6 +182,54 @@
     <?php endif; ?>
   </div>
 </div>
+<script>
+function back_address(){
+	jQuery('#payment-errors').html('');
+	jQuery('#step1').css("display","block");
+	jQuery('#step2').css("display","none");
+	jQuery('#next_button').css("display","inline-block");
+	jQuery('#back_button').css("display","none");
+	jQuery('#checkout_button').css("display","none");
+	jQuery('#checkoutModalLabel').html("Shipping Address");
+}
+
+function check_address($address){
+	var data = {
+		'full_name': jQuery('#full-name').val(),
+		'email' : jQuery('#email').val(),
+		'street' : jQuery('#street').val(),
+		'street2' : jQuery('#street2').val(),
+		'city' : jQuery('#city').val(),
+		'state' : jQuery('#state').val(),
+		'zip' : jQuery('#zip').val(),
+		'country' : jQuery('#country').val()
+	};
+	jQuery.ajax({
+		url		: '/my-php-shop/admin/parsers/check_address.php',
+		method	: "post",
+		data	: data,
+		success	: function(data){
+			if(data != 'passed'){
+				jQuery('#payment-errors').html(data);
+
+			}
+			if(data == 'passed'){
+				jQuery('#payment-errors').html('');
+				jQuery('#step1').css("display","none");
+				jQuery('#step2').css("display","block");
+				jQuery('#next_button').css("display","none");
+				jQuery('#back_button').css("display","inline-block");
+				jQuery('#checkout_button').css("display","inline-block");
+				jQuery('#checkoutModalLabel').html("Enter Your Card Details");
+			}
+		},
+		error	: function(){
+			alert("Your Address Was not able to be verified Try Again!");
+		}
+	});
+
+}
+</script>
 
 <?php
 	include 'includes/footer.php';
