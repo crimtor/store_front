@@ -9,7 +9,7 @@
   // Token is created using Checkout or Elements!
   // Get the payment token ID submitted by the form:
   $token = $_POST['stripeToken'];
-  $name = sanitize($_POST['full_name']);
+  $name = sanitize($_POST['full-name']);
   $email = sanitize($_POST['email']);
   $street = sanitize($_POST['street']);
   $street2 = sanitize($_POST['street2']);
@@ -39,7 +39,28 @@
         'receipt_email' => $email,
         'metadata' => $meta_data,
     ]);
-
+		//Adjust the inventory
+		$item_query = $db->query("SELECT * FROM cart WHERE id = '{$cart_id}'");
+		$items_result = mysqli_fetch_assoc($item_query);
+		$items = json_decode($items_result['items'], true);
+		foreach ($items as $item) {
+			$new_sizes = array();
+			$item_id = $item['id'];
+			$product_query = $db->query("SELECT sizes FROM products WHERE id = '{$item_id}'");
+			$product = mysqli_fetch_assoc($product_query);
+			$sizes = sizesToArray($product['sizes']);
+			foreach ($sizes as $size) {
+				if($size['size'] == $item['size']){
+					$quantity = $size['quantity'] - $item['quantity'];
+					$new_sizes[] = array('size' => $size['size'], 'quantity' => $quantity);
+				}else{
+					$new_sizes[] = array('size' => $size['size'], 'quantity' => $size['quantity']);
+				}
+			}
+			$size_string = sizesToString($new_sizes);
+			$db->query("UPDATE products SET sizes = '{$size_string}' WHERE id = '{$item_id}'");
+		}
+		//UPDATE Cart
     $db->query("UPDATE cart SET paid = 1 WHERE id = '{$cart_id}'");
     $db->query("INSERT INTO transactions (charge_id, cart_id, full_name, email, street, street2, city, state, zip, country, sub_total, tax, grand_total, description, trn_type)
     VALUES ('{$charge->id}', '{$cart_id}', '{$name}', '{$email}', '{$street}', '{$street2}', '{$city}', '{$state}', '{$zip}', '{$country}', '{$sub_total}', '{$tax}',
@@ -50,13 +71,24 @@
   	include 'includes/header-partial.php';
     ?>
     <h1  class="text-center text-success"> Thank You!</h1>
-    <p> Your card has been successfully charged <?=money($grand_total);?>, You have been emailed a receipt.
-      Please check your spam folder if you do not see it in your inbox. Additionally you can print this page as a receipt.</p>
+    <div class="container" style="width: 60%;">
+			<p> Your card has been successfully charged <?=money($grand_total);?>, You have been emailed a receipt. <br />
+      Please check your spam folder if you do not see it in your inbox. <br />
+			Additionally you can print this page as a receipt.</p>
       <p>Your receipt number is: <strong><?=$cart_id;?></strong></p>
       <p>Your order will be shipped to the address below.</p>
       <address>
         <?=$name;?><br />
         <?=$street;?><br />
+				<?=(($street2 != '')?$street2.'<br />':'');?>
+				<?=$city. ', '.$state. ' '.$zip;?>,<br />
+				<?=$country;?><br />
+			</address>
+
+			<p>Have a wonderful day!</p>
+		</div>
+			<?php
+				include 'includes/footer.php';
   } catch(\Stripe\Error\Card $e) {
     // Since it's a decline, \Stripe\Error\Card will be caught
     $body = $e->getJsonBody();

@@ -86,3 +86,23 @@
 		$category = mysqli_fetch_assoc($query);
 		return $category;
 	}
+
+	function sizesToArray($string){
+		$trimmed = rtrim($string, ',');
+		$size_array = explode(',', $trimmed);
+		$array_to_return = array();
+		foreach ($size_array as $size) {
+			$inner_array = explode(':', $size);
+			$array_to_return[] = array('size' => $inner_array[0], 'quantity' => $inner_array[1]);
+			}
+			return $array_to_return;
+	}
+
+	function sizesToString($size_array){
+		$sizeString = null;
+		foreach ($size_array as $size) {
+			$sizeString .= $size['size'].':'.$size['quantity'].',';
+			}
+			$trimmed = rtrim($sizeString, ',');
+			return $trimmed;
+	}

@@ -138,7 +138,7 @@
               </div>
             </div>
             <div id="step2" style="display:none;">
-							<div class="form-group col-md-3">
+							<div class="form-row">
 								<label for="card-element">
 							      Credit or debit card
 							    </label>
@@ -149,7 +149,6 @@
 							    <!-- Used to display Element errors. -->
 							    <div id="card-errors" role="alert"></div>
 							  	</div>
-								</select>
 							</div>
 						</div>
 
@@ -224,6 +223,7 @@ var style = {
     // Add your base input styles here. For example:
     fontSize: '16px',
     color: "#32325d",
+		padding: '10px',
   }
 };
 
