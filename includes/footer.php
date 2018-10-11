@@ -8,6 +8,7 @@
 
 	<script src="js/jquery-1.12.3.min.js"></script>
 	<script src="js/bootstrap.min.js"></script>
+	<script src="http://cdnjs.cloudflare.com/ajax/libs/fotorama/4.6.4/fotorama.js"></script>
 	<script>
 		function updateSizes() {
 			var sizeString = '';
@@ -66,7 +67,7 @@
 				error: function(){ alert("Something went wrong with the Cart.")}
 			});
 		}
-		
+
 		function detailsmodal(id) {
 			var data = { "id" : id};
 			// send data to detailsmodal.php

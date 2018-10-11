@@ -5,22 +5,45 @@
 	include 'includes/header-partial.php';
 	include 'includes/leftbar.php';
 
-  if(isset($_GET['cat'])){
-    $cat_id = sanitize($_GET['cat']);
+  $sql = "SELECT * FROM products";
+  $cat_id = (($_POST['cat_id'] != '')?sanitize($_POST['cat_id']):'');
+  if($cat_id == ''){
+    $sql .= " WHERE deleted = 0";
   }else{
-    $cat_id = '';
+    $sql .= " WHERE categories = '{$cat_id}' and deleted = 0";
+  }
+  $price_sort = (($_POST['price_sort'] != '')?sanitize($_POST['price_sort']):'');
+  $min_price = (($_POST['min_price'] != '')?sanitize($_POST['min_price']):'');
+  $max_price = (($_POST['max_price'] != '')?sanitize($_POST['max_price']):'');
+  $brand = (($_POST['brand'] != '')?sanitize($_POST['brand']):'');
+  if($min_price != ''){
+    $sql .= " AND price >= '{$min_price}'";
+  }
+  if($max_price != ''){
+    $sql .= " AND price <= '{$max_price}'";
+  }
+  if($brand != ''){
+    $sql .= " AND brand = '{$brand}'";
+  }
+  if($price_sort == 'low'){
+    $sql .= " ORDER BY price";
+  }
+  if($price_sort == 'hgh'){
+    $sql .= " ORDER BY price DESC";
   }
 
-	$sql = "SELECT * FROM products WHERE categories = '{$cat_id}'";
-	$products = $db->query($sql);
+  $products = $db->query($sql);
   $category = get_catergories($cat_id);
 ?>
 
 	<!-- Main Content -->
 	<div class="col-md-8">
 		<div class="row">
+      <?php if($cat_id != ''): ?>
 			<h2 class="text-center"><?=$category['parent']. ' ' . $category['child'];?></h2>
-
+    <?php else: ?>
+      <h2 class="text-center">Search Results</h2>
+    <?php endif; ?>
 			<?php while($product = mysqli_fetch_assoc($products)) : ?>
 			<div class="col-md-3">
 				<h4><?php echo $product['title']; ?></h4>
@@ -38,4 +61,3 @@
 <?php
 	include 'includes/rightbar.php';
 	include 'includes/footer.php';
-?>

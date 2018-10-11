@@ -4,6 +4,7 @@
 	include 'includes/navigation.php';
 	check_logged_in_status();
 	$dbpath = '';
+
 // Delete product
 if(isset($_GET['delete'])) {
 	$delete_id = (int)$_GET['delete'];
@@ -33,9 +34,14 @@ if(isset($_GET['delete'])) {
 			$product = mysqli_fetch_assoc($productResults);
 
 			if(isset($_GET['delete_image'])){
-				$image_url = $_SERVER['DOCUMENT_ROOT'].$product['image'];
+				$img_inc = $_GET['img_inc'];
+				$inc = (int)$img_inc - 1;
+				$images = explode(',', $product['image']);
+				$image_url = $_SERVER['DOCUMENT_ROOT'].$images[$inc];
 				unset($image_url);
-				$db->query("UPDATE products SET image = '' WHERE id = '{$edit_id}'");
+				unset($images[$inc]);
+				$imageString = implode(',', $images);
+				$db->query("UPDATE products SET image = '{$imageString}' WHERE id = '{$edit_id}'");
 				page_redirect('products.php?edit='.$edit_id);
 			}
 
@@ -82,41 +88,51 @@ if(isset($_GET['delete'])) {
 			$errors = array();
 
 			$required = array('title', 'brand', 'price', 'parent', 'child', 'sizes');
+			$allowed = array('png', 'jpg', 'jpeg', 'gif');
+			$tmpLoc = array();
+			$uploadPath = array();
 			foreach($required as $field) {
 				if($_POST[$field] == '') {
 					$errors[] = 'All fields with an anterisk are required!';
 					break;
 				}
 			}
-
-			if(!empty($_FILES)) {
+			$photoCount = 0;
+			if(isset($_FILES['photo'])){
+			$photoCount = count($_FILES['photo']['name']);
+			}
+			if($photoCount > 0) {
 				// var_dump($_FILES);
-				$photo = $_FILES['photo'];
-				$name = $photo['name'];
-				$nameArray = explode('.', $name);
-				$fileName = $nameArray[0];
-				$fileExt = $nameArray[1];
-				$mime = explode('/', $photo['type']);
-				$mimeType = $mime[0];
-				$mimeExt = $mime[1];
-				$tmpLoc = $photo['tmp_name'];
-				$fileSize = $photo['size'];
+				for($i = 0;$i<$photoCount;$i++){
+					$name = $_FILES['photo']['name'][$i];
+					$nameArray = explode('.', $name);
+					$fileName = $nameArray[0];
+					$fileExt = $nameArray[1];
+					$mime = explode('/', $_FILES['photo']['type'][$i]);
+					$mimeType = $mime[0];
+					$mimeExt = $mime[1];
+					$tmpLoc[] = $_FILES['photo']['tmp_name'][$i];
+					$fileSize = $_FILES['photo']['size'][$i];
+					$uploadName = md5(microtime().$i).'.'.$fileExt;
+					$uploadPath[] = BASEURL.'images/products/'.$uploadName;
 
-				$allowed = array('png', 'jpg', 'jpeg', 'gif');
-				$uploadName = md5(microtime()).'.'.$fileExt;
-				$uploadPath = BASEURL.'images/products/'.$uploadName;
-				$dbpath = '/my-php-shop/images/products/'.$uploadName;
-				if($mimeType != 'image') {
-					$errors[] .= 'The file must be an image.';
-				}
-				if(!in_array($fileExt, $allowed)) {
-					$errors[] .= 'The file extension must be a png, jpg, jpeg, or gif.';
-				}
-				if($fileSize > 15000000) {
-					$errors[] .= 'The file size must be under 15 megabytes.';
-				}
-				if($fileExt != $mimeExt && ($mimeExt == 'jpeg' && $fileExt != 'jpg')) {
-					$errors[] .= 'File extension does not match the file.';
+					if($i != 0){
+						$dbpath .= ',';
+					}
+					$dbpath .= '/my-php-shop/images/products/'.$uploadName;
+
+					if($mimeType != 'image') {
+						$errors[] .= 'The file must be an image.';
+					}
+					if(!in_array($fileExt, $allowed)) {
+						$errors[] .= 'The file extension must be a png, jpg, jpeg, or gif.';
+					}
+					if($fileSize > 15000000) {
+						$errors[] .= 'The file size must be under 15 megabytes.';
+					}
+					if($fileExt != $mimeExt && ($mimeExt == 'jpeg' && $fileExt != 'jpg')) {
+						$errors[] .= 'File extension does not match the file.';
+					}
 				}
 			}
 
@@ -124,17 +140,20 @@ if(isset($_GET['delete'])) {
 				echo display_errors($errors);
 			} else {
 				/* Upload file and insert into database. */
-				if(!empty($_FILES)){
-				move_uploaded_file($tmpLoc, $uploadPath);
+				if($photoCount > 0){
+					for($i = 0;$i<$photoCount;$i++){
+				move_uploaded_file($tmpLoc[$i], $uploadPath[$i]);
+				}
 			}
-				$insertSql = "INSERT INTO products ('title', 'price', 'list_price', 'brand', 'categories', 'image', 'description', 'sizes')
+				$insertSql = "INSERT INTO products (title, price, list_price, brand, categories, image, description, sizes)
 				VALUES ('{$title}', '{$price}', '{$list_price}', '{$brand}', '{$category}', '{$dbpath}', '{$description}', '{$sizes}')";
+
 				if(isset($_GET['edit'])){
 					$insertSql = "UPDATE products SET title = '{$title}', price = '{$price}', list_price = '{$list_price}', brand = '{$brand}',
 					categories = '{$category}', image = '{$dbpath}', description = '{$description}', sizes = '{$sizes}'
 					WHERE id = '{$edit_id}'";
 				}
-				$db->query($insertSql);
+				$r = $db->query($insertSql);
 				page_redirect('products.php');
 			}
 		}
@@ -145,7 +164,7 @@ if(isset($_GET['delete'])) {
 <h2 class="text-center"><?php echo ((isset($_GET['edit']))?'Edit' : 'Add A New'); ?> Product</h2>
 <hr>
 
-<form class="form" action="products.php?<?php echo ((isset($_GET['edit']))?'edit='.$edit_id : 'add=1'); ?>" method="post" enctype="multipart/form-data">
+<form class="form" id="product_form" name="product_form" action="products.php?<?php echo ((isset($_GET['edit']))?'edit='.$edit_id : 'add=1'); ?>" method="post" enctype="multipart/form-data">
 	<div class="form-group col-md-3">
 		<label for="title">Title*:</label>
 		<input class="form-control" type="text" name="title" id="title" value="<?php echo $title; ?>">
@@ -190,21 +209,29 @@ if(isset($_GET['delete'])) {
 	</div>
 	<div class="form-group col-md-6">
 		<?php if($saved_image != ''): ?>
-			<div class="saved-image"><img src="<?=$saved_image;?>" alt="Saved Image" /><br />
-				<a style="text-align: center; margin-left: 4em; font-weight: bolder;" href="products.php?delete_image=1&edit=<?=$edit_id;?>" class="text-danger"> Delete Image </a>
+			<?php
+				$img_inc = 1;
+				$photos = explode(',', $saved_image);
+				foreach($photos as $photo) : ?>
+			<div class="saved-image col-md-4"><img src="<?=$photo;?>" alt="Saved Image" /><br />
+				<a style="text-align: center; margin-left: 4em; font-weight: bolder;"
+				href="products.php?delete_image=1&edit=<?=$edit_id;?>&img_inc=<?=$img_inc;?>" class="text-danger"> Delete Image </a>
 			</div>
+		<?php
+		$img_inc++;
+		endforeach; ?>
 		<?php else: ?>
 		<label for="photo">Product Photo:</label>
-		<input class="form-control" type="file" name="photo" id="photo">
+		<input class="form-control" type="file" name="photo[]" id="photo" multiple>
 		<?php endif; ?>
 	</div>
 	<div class="form-group col-md-6">
 		<label for="description">Description</label>
 		<textarea class="form-control" name="description" id="description" rows="6"><?=$description;?></textarea>
 	</div>
-	<div class="form-group pull-right clearfix">
+	<div class="form-group pull-right">
 		<a class="btn btn-default" href="products.php">Cancel</a>
-		<input class="btn btn-success" type="submit" value="<?php echo ((isset($_GET['edit']))?'Edit' : 'Add'); ?> Product">
+		<button type="submit" form="product_form" value="Submit" class="btn btn-success"><?=((isset($_GET['edit']))?'Edit' : 'Add'); ?> Product</button>
 	</div>
 	<div class="clearfix"></div>
 </form>

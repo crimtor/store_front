@@ -60,9 +60,8 @@ body {
 	margin-top: 50px;
 }
 
-img.details {
-	width: 50%;
-	margin: 15px auto;
+.fotorama__stage {
+	width: 100% !important;
 }
 
 .table-auto {
@@ -137,4 +136,16 @@ img.details {
 }
 .totals-table-header th {
 	text-align: center;
+}
+
+#cart_widget td{
+	text-align: center;
+	font-size: .8em;
+}
+#recent_widget td{
+	text-align: center;
+	font-size: .8em;
+}
+.price-range {
+	max-width: 50px;
 }

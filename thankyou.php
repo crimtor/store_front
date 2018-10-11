@@ -60,6 +60,7 @@
 			$size_string = sizesToString($new_sizes);
 			$db->query("UPDATE products SET sizes = '{$size_string}' WHERE id = '{$item_id}'");
 		}
+
 		//UPDATE Cart
     $db->query("UPDATE cart SET paid = 1 WHERE id = '{$cart_id}'");
     $db->query("INSERT INTO transactions (charge_id, cart_id, full_name, email, street, street2, city, state, zip, country, sub_total, tax, grand_total, description, trn_type)
@@ -89,6 +90,7 @@
 		</div>
 			<?php
 				include 'includes/footer.php';
+				
   } catch(\Stripe\Error\Card $e) {
     // Since it's a decline, \Stripe\Error\Card will be caught
     $body = $e->getJsonBody();

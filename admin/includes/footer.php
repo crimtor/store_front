@@ -6,7 +6,6 @@
 </footer>
 
 <script>
-
 function get_child_options(selected){
 	if(typeof selected === 'undefined'){
 		var selected = '';
@@ -14,7 +13,7 @@ function get_child_options(selected){
 	var parentID = jQuery('#parent').val();
 	jQuery.ajax({
 		url: '/my-php-shop/admin/parsers/child_categories.php',
-		type: 'post',
+		type: 'POST',
 		data: { parentID : parentID, selected: selected },
 		success: function(data){
 			jQuery('#child').html(data);
@@ -24,6 +23,11 @@ function get_child_options(selected){
 		}
 	});
 }
+
+jQuery('select[name="parent"]').change(function(){
+	get_child_options();
+});
+
 	function updateSizes() {
 		var sizeString = '';
 		for(var i = 1; i <= 12; i++) {
@@ -33,8 +37,7 @@ function get_child_options(selected){
 		}
 		jQuery('#sizes').val(sizeString);
 	}
-	jQuery('select[name="parent"]').change(get_child_options);
-	
+
 </script>
 
 </body>
