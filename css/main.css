@@ -1,6 +1,10 @@
 body {
 	padding-top: 50px;
 }
+#navigation_main nav {
+	height: 3% !important;
+	overflow: hidden !important;
+}
 
 #headerWrapper {
 	position: relative;
@@ -148,4 +152,15 @@ body {
 }
 .price-range {
 	max-width: 50px;
+}
+
+#left_sidebar {
+	align-self: center;
+	text-align: center;
+	box-shadow: 2px 0px 0px rgba(0,0,0,0.1);
+}
+#right_sidebar {
+	align-self: center;
+	text-align: center;
+	box-shadow: -1px 0px 0px rgba(0,0,0,0.1);
 }

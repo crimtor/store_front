@@ -8,12 +8,13 @@
 				<span class="icon-bar"></span>
 				<span class="icon-bar"></span>
 			</button>
-			<a class="navbar-brand" href="/my-php-shop/admin/index.php">Shaunta's Boutique Admin</a>
+			<a class="navbar-brand" href="/my-php-shop/index.php">Shawn's Business Website</a>
 		</div>
 
 		<div class="collapse navbar-collapse">
 			<ul class="nav navbar-nav">
-
+				<!--- Menu Items --->
+				<li><a href="index.php">My Dashboard</a></li>
 				<li><a href="brands.php">Brands</a></li>
 				<li><a href="categories.php">Categories</a></li>
 				<li><a href="products.php">Products</a></li>

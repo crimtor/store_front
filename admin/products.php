@@ -66,10 +66,12 @@ if(isset($_GET['delete'])) {
 			$sizesArray = explode(',', $sizeString);
 			$sArray = array();
 			$qArray = array();
+			$tArray =array();
 			foreach($sizesArray as $ss) {
 				$s = explode(':', $ss);
 				$sArray[] = $s[0];
 				$qArray[] = $s[1];
+				$tArray[] = $s[2];
 			}
 		} else {
 			$sizesArray = array();
@@ -77,13 +79,6 @@ if(isset($_GET['delete'])) {
 
 
 		if($_POST) {
-			// //$title = sanitize($_POST['title']);
-			// //$brand = sanitize($_POST['brand']);
-			// $categories = sanitize($_POST['child']);
-			// $price = sanitize($_POST['price']);
-			// $list_price = sanitize($_POST['list_price']);
-			// $sizes = sanitize($_POST['sizes']);
-			// $description = sanitize($_POST['description']);
 
 			$errors = array();
 
@@ -145,12 +140,19 @@ if(isset($_GET['delete'])) {
 				move_uploaded_file($tmpLoc[$i], $uploadPath[$i]);
 				}
 			}
-				$insertSql = "INSERT INTO products (title, price, list_price, brand, categories, image, description, sizes)
-				VALUES ('{$title}', '{$price}', '{$list_price}', '{$brand}', '{$category}', '{$dbpath}', '{$description}', '{$sizes}')";
+			$product_for_search = array(
+				'title' => $title,
+				'description' => $description,
+				'categories' => $category,
+				'brand' => $brand,
+			);
+			$sounds_like = make_sounds_like($product_for_search);
+				$insertSql = "INSERT INTO products (title, price, list_price, brand, categories, image, description, sizes, sounds_like)
+				VALUES ('{$title}', '{$price}', '{$list_price}', '{$brand}', '{$category}', '{$dbpath}', '{$description}', '{$sizes}', '{$sounds_like}')";
 
 				if(isset($_GET['edit'])){
 					$insertSql = "UPDATE products SET title = '{$title}', price = '{$price}', list_price = '{$list_price}', brand = '{$brand}',
-					categories = '{$category}', image = '{$dbpath}', description = '{$description}', sizes = '{$sizes}'
+					categories = '{$category}', image = '{$dbpath}', description = '{$description}', sizes = '{$sizes}', sounds_like = '{$sounds_like}'
 					WHERE id = '{$edit_id}'";
 				}
 				$r = $db->query($insertSql);
@@ -248,13 +250,17 @@ if(isset($_GET['delete'])) {
 			<div class="modal-body">
 				<div class="container-fluid">
 					<?php for($i = 1; $i <= 12; $i++) : ?>
-					<div class="form-group col-md-4">
+					<div class="form-group col-md-2">
 						<label for="size<?=$i; ?>">Size: </label>
 						<input class="form-control" type="text" name="size<?=$i; ?>" id="size<?=$i; ?>" value="<?=((!empty($sArray[$i-1]))?$sArray[$i-1] : ''); ?>">
 					</div>
 					<div class="form-group col-md-2">
 						<label for="qty<?php echo $i; ?>">Quantity:</label>
 						<input class="form-control" type="number" name="qty<?=$i; ?>" id="qty<?= $i; ?>" value="<?= ((!empty($qArray[$i-1]))?$qArray[$i-1] : ''); ?>" min="0">
+					</div>
+					<div class="form-group col-md-2">
+						<label for="threshold<?php echo $i; ?>">Inv Threshold:</label>
+						<input class="form-control" type="number" name="threshold<?=$i; ?>" id="threshold<?= $i; ?>" value="<?= ((!empty($tArray[$i-1]))?$tArray[$i-1] : ''); ?>" min="0">
 					</div>
 					<?php endfor; ?>
 				</div>

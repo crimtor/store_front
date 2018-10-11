@@ -4,6 +4,13 @@
   include 'includes/head.php';
 	include 'includes/navigation.php';
 
+//complete the order
+if(isset($_GET['complete']) && $_GET['complete'] == 1){
+	$cart_id = sanitize((int)$_GET['cart_id']);
+	$db->query("UPDATE cart SET shipped = 1 WHERE id = '{$cart_id}'");
+	$_SESSION['success_flash'] = "The Order has been marked as shipped!";
+	page_redirect("index.php");
+}
   $trn_id = ((isset($_GET['trn_id']))?sanitize((int)$_GET['trn_id']) : 1);
   $trn_query = $db->query("SELECT * FROM transactions WHERE id = '{$trn_id}'");
   $trn = mysqli_fetch_assoc($trn_query);
@@ -36,7 +43,6 @@ while($p = mysqli_fetch_assoc($product_query)){
   $products[] = array_merge($x, $p);
 }
   ?>
-
   <h2 class="text-center">Items Ordered</h2>
   <table class="table table-condensed table-bordered table-striped">
     <thead>
@@ -57,6 +63,48 @@ while($p = mysqli_fetch_assoc($product_query)){
     </tbody>
   </table>
 
+	<div class="row">
+		<div class="col-md-6">
+			<h3 class="text-center">Order Details</h3>
+			<table class="table table-condensed table-bordered table-striped">
+				<tbody>
+					<tr>
+						<td>Sub Total</td>
+						<td><?=money($trn['sub_total']);?></td>
+					</tr>
+					<tr>
+						<td>Tax</td>
+						<td><?=money($trn['tax']);?></td>
+					</tr>
+					<tr>
+						<td>Grand Total</td>
+						<td><?=money($trn['grand_total']);?></td>
+					</tr>
+					<tr>
+						<td>Transaction Date</td>
+						<td><?=format_date($trn['trn_date']);?></td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+
+		<div class="col-md-6">
+			<h3 class="text-center">Shipping Address Details</h3>
+			<address>
+        <?=$trn['full_name'];?><br />
+        <?=$trn['street'];?><br />
+				<?=(($trn['street2'] != '')?$trn['street2'].'<br />':'');?>
+				<?=$trn['city']. ', '.$trn['state']. ' '.$trn['zip'];?>,<br />
+				<?=$trn['country'];?><br />
+			</address>
+		</div>
+
+	</div>
+
+	<div class="pull-right">
+		<a href="index.php" class="btn btn-large btn-default">Cancel</a>
+		<a href="orders.php?complete=1&cart_id=<?=$cart_id;?>" class="btn btn-large btn-primary">Mark Order Complete</a>
+	</div>
 
 
 

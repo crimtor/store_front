@@ -3,7 +3,7 @@
 
 	<!-- Footer -->
 	<footer class="text-center" id="footer">
-		&copy; Copyright 2016 Shaunta's Boutique
+		&copy; Copyright 2018 Your Business Name Here
 	</footer>
 
 	<script src="js/jquery-1.12.3.min.js"></script>

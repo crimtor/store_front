@@ -2,7 +2,7 @@
 
 <!-- Footer -->
 <footer class="text-center" id="footer">
-	&copy; Copyright 2016 Shaunta's Boutique
+	&copy; Copyright 2018 Shawn's Business Website
 </footer>
 
 <script>
@@ -32,7 +32,7 @@ jQuery('select[name="parent"]').change(function(){
 		var sizeString = '';
 		for(var i = 1; i <= 12; i++) {
 			if(jQuery('#size'+i).val() != '') {
-				sizeString += jQuery('#size'+i).val()+':'+jQuery('#qty'+i).val()+','; // example output: small:7,medium:8,
+				sizeString += jQuery('#size'+i).val()+':'+jQuery('#qty'+i).val()+':'+jQuery('#threshold'+i).val()+','; // example output: small:7,medium:8,
 			}
 		}
 		jQuery('#sizes').val(sizeString);

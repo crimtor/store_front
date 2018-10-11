@@ -12,11 +12,16 @@
   }else{
     $sql .= " WHERE categories = '{$cat_id}' and deleted = 0";
   }
+	$search_name = (($_POST['search_name'] != '')?sanitize($_POST['search_name']):'');
   $price_sort = (($_POST['price_sort'] != '')?sanitize($_POST['price_sort']):'');
   $min_price = (($_POST['min_price'] != '')?sanitize($_POST['min_price']):'');
   $max_price = (($_POST['max_price'] != '')?sanitize($_POST['max_price']):'');
   $brand = (($_POST['brand'] != '')?sanitize($_POST['brand']):'');
-  if($min_price != ''){
+	if($search_name != ''){
+		$search_name = metaphone($search_name);
+    $sql .= " AND sounds_like like '%{$search_name}%'";
+  }
+	if($min_price != ''){
     $sql .= " AND price >= '{$min_price}'";
   }
   if($max_price != ''){

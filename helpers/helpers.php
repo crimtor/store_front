@@ -93,7 +93,7 @@
 		$array_to_return = array();
 		foreach ($size_array as $size) {
 			$inner_array = explode(':', $size);
-			$array_to_return[] = array('size' => $inner_array[0], 'quantity' => $inner_array[1]);
+			$array_to_return[] = array('size' => $inner_array[0], 'quantity' => $inner_array[1], 'threshold' => $inner_array[2]);
 			}
 			return $array_to_return;
 	}
@@ -101,8 +101,40 @@
 	function sizesToString($size_array){
 		$sizeString = null;
 		foreach ($size_array as $size) {
-			$sizeString .= $size['size'].':'.$size['quantity'].',';
+			$sizeString .= $size['size'].':'.$size['quantity'].':'.$size['threshold'].',';
 			}
 			$trimmed = rtrim($sizeString, ',');
 			return $trimmed;
+	}
+
+	function make_sounds_like($product){
+		$sounds_like = '';
+		global $db;
+		if(isset($product['brand'])){
+			$brand_id = $product['brand'];
+			$brandQuery = $db->query("SELECT * FROM brand WHERE id = '{$brand_id}'");
+			$brand = mysqli_fetch_assoc($brandQuery);
+			$sounds_like .= metaphone($brand['brand']).' ';
+		}
+
+		if(isset($product['categories'])){
+			$cat_id = $product['categories'];
+			$childQuery = $db->query("SELECT * FROM categories WHERE id = '{$cat_id}'");
+			$child = mysqli_fetch_assoc($childQuery);
+			$parent_id = $child['parent'];
+			$parentQuery = $db->query("SELECT * FROM categories WHERE id = '{$parent_id}'");
+			$parent = mysqli_fetch_assoc($parentQuery);
+			$sounds_like .= metaphone($child['category']).' ';
+			$sounds_like .= metaphone($parent['category']).' ';
+		}
+
+		if(isset($product['title'])){
+			$sounds_like .= metaphone($product['title']).' ';
+		}
+
+		if(isset($product['description'])){
+			$sounds_like .= metaphone($product['title']).' ';
+		}
+
+		return $sounds_like;
 	}
