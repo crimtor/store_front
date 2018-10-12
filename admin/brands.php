@@ -82,16 +82,16 @@
 
 <table class="table table-bordered table-striped table-auto table-condensed">
 	<thead>
-		<th></th>
-		<th>Brand</th>
-		<th></th>
+		<th>edit</th>
+		<th>Brand Name</th>
+		<th>delete</th>
 	</thead>
 	<tbody>
 		<?php while($brand = mysqli_fetch_assoc($results)) : ?>
 		<tr>
-			<td><a class="btn btn-xs btn-default" href="brands.php?edit=<?php echo $brand['id']; ?>"><span class="glyphicon glyphicon-pencil"></span></a></td>
+			<td><a class="btn btn-xs btn-default" href="brands.php?edit=<?php echo $brand['id']; ?>"><i class="fa fa-pencil" aria-hidden="true"></i></a></td>
 			<td><?php echo $brand['brand']; ?></td>
-			<td><a class="btn btn-xs btn-default" href="brands.php?delete=<?php echo $brand['id']; ?>"><span class="glyphicon glyphicon-remove-sign"></span></a></td>
+			<td><a class="btn btn-xs btn-default" style="color:#9B2423;" href="brands.php?delete=<?php echo $brand['id']; ?>"><i class="fa fa-trash-o" aria-hidden="true"></i></a></td>
 		</tr>
 		<?php endwhile; ?>
 	</tbody>

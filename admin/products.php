@@ -163,10 +163,12 @@ if(isset($_GET['delete'])) {
 
 
 <!-- Form -->
+<br />
 <h2 class="text-center"><?php echo ((isset($_GET['edit']))?'Edit' : 'Add A New'); ?> Product</h2>
 <hr>
 
 <form class="form" id="product_form" name="product_form" action="products.php?<?php echo ((isset($_GET['edit']))?'edit='.$edit_id : 'add=1'); ?>" method="post" enctype="multipart/form-data">
+	<div class="row">
 	<div class="form-group col-md-3">
 		<label for="title">Title*:</label>
 		<input class="form-control" type="text" name="title" id="title" value="<?php echo $title; ?>">
@@ -231,6 +233,7 @@ if(isset($_GET['delete'])) {
 		<label for="description">Description</label>
 		<textarea class="form-control" name="description" id="description" rows="6"><?=$description;?></textarea>
 	</div>
+</div>
 	<div class="form-group pull-right">
 		<a class="btn btn-default" href="products.php">Cancel</a>
 		<button type="submit" form="product_form" value="Submit" class="btn btn-success"><?=((isset($_GET['edit']))?'Edit' : 'Add'); ?> Product</button>
@@ -249,6 +252,7 @@ if(isset($_GET['delete'])) {
 			</div>
 			<div class="modal-body">
 				<div class="container-fluid">
+					<div class="row">
 					<?php for($i = 1; $i <= 12; $i++) : ?>
 					<div class="form-group col-md-2">
 						<label for="size<?=$i; ?>">Size: </label>
@@ -259,10 +263,11 @@ if(isset($_GET['delete'])) {
 						<input class="form-control" type="number" name="qty<?=$i; ?>" id="qty<?= $i; ?>" value="<?= ((!empty($qArray[$i-1]))?$qArray[$i-1] : ''); ?>" min="0">
 					</div>
 					<div class="form-group col-md-2">
-						<label for="threshold<?php echo $i; ?>">Inv Threshold:</label>
+						<label for="threshold<?php echo $i; ?>">Threshold:</label>
 						<input class="form-control" type="number" name="threshold<?=$i; ?>" id="threshold<?= $i; ?>" value="<?= ((!empty($tArray[$i-1]))?$tArray[$i-1] : ''); ?>" min="0">
 					</div>
 					<?php endfor; ?>
+				</div>
 				</div>
 			</div>
 			<div class="modal-footer">
@@ -295,7 +300,8 @@ if(isset($_GET['delete'])) {
 
 <table class="table table-bordered table-condensed table-striped">
 	<thead>
-		<th></th>
+		<th>Edit</td>
+		<th>Delete</th>
 		<th>Product</th>
 		<th>Price</th>
 		<th>Category</th>
@@ -303,6 +309,31 @@ if(isset($_GET['delete'])) {
 		<th>Sold</th>
 	</thead>
 	<tbody>
+		<?php
+		$cart_query = $db->query("SELECT * FROM cart WHERE paid = 1");
+		$items_sold_array = array();
+		$quantity_items_sold = array();
+		$item_ids = array();
+		while($c = mysqli_fetch_assoc($cart_query)){
+			$items_sold_array = json_decode($c['items'], true);
+			foreach ($items_sold_array as $items) {
+					$inner_item_id = $items['id'];
+					$inner_item_quantity = (int)$items['quantity'];
+
+					if(!in_array($inner_item_id, $item_ids)){
+							$quantity_items_sold[] = array(
+							'id' => $inner_item_id,
+							'quantity' => $inner_item_quantity
+						);
+					}else{
+						$index_to_change = array_search($inner_item_id, array_column($quantity_items_sold, 'id'));
+						$current_quantity = (int)$quantity_items_sold[$index_to_change]['quantity'];
+						$quantity_items_sold[$index_to_change]['quantity'] = $current_quantity + $inner_item_quantity;
+					}
+					$item_ids[] = $inner_item_id;
+				}
+		}
+		?>
 		<?php while($product = mysqli_fetch_assoc($presults)) :
 			$childID = $product['categories'];
 			$result = $db->query("SELECT * FROM categories WHERE id = '{$childID}'");
@@ -311,19 +342,24 @@ if(isset($_GET['delete'])) {
 			$presult = $db->query("SELECT * FROM categories WHERE id = '$parentID'");
 			$parent = mysqli_fetch_assoc($presult);
 			$category = $parent['category'].' ~ '.$child['category'];
-		?>
+			?>
 		<tr>
 			<td>
-				<a class="btn btn-xs btn-default" href="products.php?edit=<?php echo $product['id']; ?>"><span class="glyphicon glyphicon-pencil"></span></a>
-				<a class="btn btn-xs btn-default" href="products.php?delete=<?php echo $product['id']; ?>"><span class="glyphicon glyphicon-remove"></span></a>
+				<a class="btn btn-xs btn-default" href="products.php?edit=<?= $product['id']; ?>"><i class="fa fa-pencil" aria-hidden="true"></i></a>
 			</td>
-			<td><?php echo $product['title']; ?></td>
-			<td><?php echo money($product['price']); ?></td>
-			<td><?php echo $category; ?></td>
 			<td>
-				<a class="btn btn-xs btn-default" href="products.php?featured=<?php echo (($product['featured'] == 0)?'1' : '0'); ?>&id=<?php echo $product['id']; ?>"><span class="glyphicon glyphicon-<?php echo (($product['featured'] == 1)?'minus': 'plus'); ?>"></span></a>&nbsp; <?php echo (($product['featured'] == 1)?'Featured Product' : ''); ?>
+				<a class="btn btn-xs btn-default" style="color:#9B2423;" href="products.php?delete=<?php echo $product['id']; ?>"><i class="fa fa-trash-o" aria-hidden="true"></i></a>
 			</td>
-			<td>0</td>
+			<td><?= $product['title']; ?></td>
+			<td><?= money($product['price']); ?></td>
+			<td><?= $category; ?></td>
+			<td>
+				<a class="btn btn-xs btn-default" href="products.php?featured=<?= (($product['featured'] == 0)?'1' : '0'); ?>&id=<?php echo $product['id']; ?>"><i aria-hidden="true" class="fa fa-<?php echo (($product['featured'] == 1)?'minus': 'plus'); ?>"></i></a>&nbsp; <?php echo (($product['featured'] == 1)?'Featured Product' : ''); ?>
+			</td>
+			<?php
+				$index_for_quantity = array_search($product['id'], array_column($quantity_items_sold, 'id'));
+				?>
+			<td> <?=(($quantity_items_sold[$index_for_quantity]['id'] == $product['id'])?$quantity_items_sold[$index_for_quantity]['quantity']:'0');?> </td>
 		</tr>
 		<?php endwhile; ?>
 	</tbody>

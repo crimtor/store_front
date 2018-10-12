@@ -13,6 +13,7 @@ $trnQuery = "SELECT t.id, t.cart_id, t.full_name, t.trn_date, t.grand_total, c.i
  ORDER BY t.trn_date";
  $trn_results = $db->query($trnQuery);
  ?>
+ <br />
  <h1 class="text-center"> My Dashboard </h1><hr><br />
 <div class="col-md-12">
 	<h3 class="text-center">Orders to Ship</h3>

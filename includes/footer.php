@@ -6,8 +6,8 @@
 		&copy; Copyright 2018 Your Business Name Here
 	</footer>
 
-	<script src="js/jquery-1.12.3.min.js"></script>
-	<script src="js/bootstrap.min.js"></script>
+	<script src="js/jquery-3.3.1.min.js"></script>
+	<script src="js/bootstrap.bundle.min.js"></script>
 	<script src="http://cdnjs.cloudflare.com/ajax/libs/fotorama/4.6.4/fotorama.js"></script>
 	<script>
 		function updateSizes() {

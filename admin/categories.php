@@ -127,10 +127,11 @@
 	<!-- Category Table -->
 	<div class="col-md-6">
 		<table class="table table-bordered table-condensed">
-			<thead>
+			<thead class="bg-primary">
 				<th>Category</th>
 				<th>Parent</th>
-				<th></th>
+				<th>Edit</th>
+				<th>Delete</th>
 			</thead>
 			<tbody>
 				<?php $result = $db->query("SELECT * FROM categories WHERE parent = 0"); ?>
@@ -139,21 +140,25 @@
 					$parent_id = (int)$parent['id'];
 					$cresult = $db->query("SELECT * FROM categories WHERE parent = '{$parent_id}'");
 				?>
-				<tr class="bg-primary">
+				<tr class="bg-secondary">
 					<td><?php echo $parent['category']; ?></td>
 					<td>Parent</td>
 					<td>
-						<a class="btn btn-xs btn-default" href="categories.php?edit=<?php echo $parent['id']; ?>"><span class="glyphicon glyphicon-pencil"></span></a>
-						<a class="btn btn-xs btn-default" href="categories.php?delete=<?php echo $parent['id']; ?>"><span class="glyphicon glyphicon-remove-sign"></span></a>
+						<a class="btn btn-xs btn-default" href="categories.php?edit=<?php echo $parent['id']; ?>"><i class="fa fa-pencil" aria-hidden="true"></i></a>
+					</td>
+					<td>
+						<a class="btn btn-xs btn-default" style="color:#9B2423;" href="categories.php?delete=<?php echo $parent['id']; ?>"><i class="fa fa-trash-o" aria-hidden="true"></i></a>
 					</td>
 				</tr>
 					<?php while($child = mysqli_fetch_assoc($cresult)) : ?>
-						<tr class="bg-info">
+						<tr class="bg-light">
 							<td><?php echo $child['category']; ?></td>
 							<td><?php echo $parent['category']; ?></td>
 							<td>
-								<a class="btn btn-xs btn-default" href="categories.php?edit=<?php echo $child['id']; ?>"><span class="glyphicon glyphicon-pencil"></span></a>
-								<a class="btn btn-xs btn-default" href="categories.php?delete=<?php echo $child['id']; ?>"><span class="glyphicon glyphicon-remove-sign"></span></a>
+								<a class="btn btn-xs btn-default" href="categories.php?edit=<?php echo $child['id']; ?>"><i class="fa fa-pencil" aria-hidden="true"></i></a>
+							</td>
+							<td>
+								<a class="btn btn-xs btn-default"  style="color:#9B2423;" href="categories.php?delete=<?php echo $child['id']; ?>"><i class="fa fa-trash-o" aria-hidden="true"></i></a>
 							</td>
 						</tr>
 					<?php endwhile; ?>
@@ -165,3 +170,4 @@
 
 <?php
 	include 'includes/footer.php';
+?>

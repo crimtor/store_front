@@ -8,12 +8,13 @@
   $brand_query = $db->query("SELECT * FROM brand ORDER BY brand");
 
   ?>
+  <br />
   <h3 class="text-center">Search By:</h3>
   <h4 class="text-center">Name</h4>
   <form action="search.php" method="post">
     <input type="hidden" name="cat_id" value="<?=$cat_id;?>">
     <input type="hidden" name="price_sort" value="0">
-    <input type="text" name="search_name" placeholder="Search Here">
+    <input class="form-control text-center" type="text" name="search_name" placeholder="Search Here">
     <h4 class="text-center">Price</h4>
     <input type="radio" name="price_sort" value="low"
     <?=(($price_sort == 'low')?' checked':'');?>>Low to High<br />

@@ -3,7 +3,6 @@
 	include 'includes/head.php';
 	include 'includes/navigation.php';
 	include 'includes/header-partial.php';
-	include 'includes/leftbar.php';
 
   if(isset($_GET['cat'])){
     $cat_id = sanitize($_GET['cat']);
@@ -16,10 +15,15 @@
   $category = get_catergories($cat_id);
 ?>
 
+<div class="row">
+<?php include 'includes/leftbar.php'; ?>
+
 	<!-- Main Content -->
 	<div class="col-md-8">
+				<br />
+				<h2 class="text-center"><?=$category['parent']. ' ' . $category['child'];?></h2>
+				<br />
 		<div class="row">
-			<h2 class="text-center"><?=$category['parent']. ' ' . $category['child'];?></h2>
 
 			<?php while($product = mysqli_fetch_assoc($products)) : ?>
 			<div class="col-md-3">
@@ -35,7 +39,9 @@
 		</div>
 	</div>
 
+	<?php include 'includes/rightbar.php';
+?>
+</div>
 <?php
-	include 'includes/rightbar.php';
 	include 'includes/footer.php';
 ?>

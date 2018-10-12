@@ -3,7 +3,6 @@
 	include 'includes/head.php';
 	include 'includes/navigation.php';
 	include 'includes/header-partial.php';
-	include 'includes/leftbar.php';
 
   $sql = "SELECT * FROM products";
   $cat_id = (($_POST['cat_id'] != '')?sanitize($_POST['cat_id']):'');
@@ -12,11 +11,11 @@
   }else{
     $sql .= " WHERE categories = '{$cat_id}' and deleted = 0";
   }
-	$search_name = (($_POST['search_name'] != '')?sanitize($_POST['search_name']):'');
-  $price_sort = (($_POST['price_sort'] != '')?sanitize($_POST['price_sort']):'');
-  $min_price = (($_POST['min_price'] != '')?sanitize($_POST['min_price']):'');
-  $max_price = (($_POST['max_price'] != '')?sanitize($_POST['max_price']):'');
-  $brand = (($_POST['brand'] != '')?sanitize($_POST['brand']):'');
+	$search_name = ((isset($_POST['search_name']) && $_POST['search_name'] != '')?sanitize($_POST['search_name']):'');
+  $price_sort = ((isset($_POST['price_sort']) && $_POST['price_sort'] != '')?sanitize($_POST['price_sort']):'');
+  $min_price = ((isset($_POST['min_price']) && $_POST['min_price'] != '')?sanitize($_POST['min_price']):'');
+  $max_price = ((isset($_POST['max_price']) && $_POST['max_price'] != '')?sanitize($_POST['max_price']):'');
+  $brand = ((isset($_POST['brand']) && $_POST['brand'] != '')?sanitize($_POST['brand']):'');
 	if($search_name != ''){
 		$search_name = metaphone($search_name);
     $sql .= " AND sounds_like like '%{$search_name}%'";
@@ -41,14 +40,17 @@
   $category = get_catergories($cat_id);
 ?>
 
+<div class="row">
+<?php include 'includes/leftbar.php'; ?>
+
 	<!-- Main Content -->
 	<div class="col-md-8">
+		<?php if($cat_id != ''): ?>
+		<h2 class="text-center"><?=$category['parent']. ' ' . $category['child'];?></h2><br />
+	<?php else: ?>
+		<h2 class="text-center">Search Results</h2><br />
+	<?php endif; ?>
 		<div class="row">
-      <?php if($cat_id != ''): ?>
-			<h2 class="text-center"><?=$category['parent']. ' ' . $category['child'];?></h2>
-    <?php else: ?>
-      <h2 class="text-center">Search Results</h2>
-    <?php endif; ?>
 			<?php while($product = mysqli_fetch_assoc($products)) : ?>
 			<div class="col-md-3">
 				<h4><?php echo $product['title']; ?></h4>
@@ -62,7 +64,9 @@
 
 		</div>
 	</div>
-
-<?php
-	include 'includes/rightbar.php';
-	include 'includes/footer.php';
+	<?php
+		include 'includes/rightbar.php';
+		?>
+	</div>
+		<?php include 'includes/footer.php';
+	?>

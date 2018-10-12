@@ -5,6 +5,13 @@
 	&copy; Copyright 2018 Shawn's Business Website
 </footer>
 
+<!-- Scripts -->
+
+<script src="../js/jquery-3.3.1.min.js"></script>
+<script src="../js/bootstrap.bundle.min.js"></script>
+<script src="http://cdnjs.cloudflare.com/ajax/libs/fotorama/4.6.4/fotorama.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
+
 <script>
 function get_child_options(selected){
 	if(typeof selected === 'undefined'){
