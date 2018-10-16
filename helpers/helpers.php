@@ -2,7 +2,7 @@
 	// Note:
 	// 1. symbol ".=" means concatenate
 	function display_errors($errors) {
-		$display = '<ul class="bg-danger">';
+		$display = '<ul>';
 		foreach($errors as $error) {
 			$display .= '<li class="text-danger">'.$error.'</li>';
 		}

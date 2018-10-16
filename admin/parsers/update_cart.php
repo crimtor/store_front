@@ -28,6 +28,17 @@ if($mode == 'addone') {
     }
   }
 
+	if($mode == 'removeall') {
+	  foreach ($items as $item) {
+	    if($item['id'] == $edit_id && $item['size'] == $edit_size){
+	      $item['quantity'] = 0;
+	    }
+	    if($item['quantity'] > 0){
+	      $updated_items[] = $item;
+	    }
+	  }
+	}
+
 if(!empty($updated_items)){
   $json_updated = json_encode($updated_items);
   $db->query("UPDATE cart SET items = '{$json_updated}' WHERE id = '{$cart_id}'");

@@ -26,8 +26,8 @@
 			<div class="modal-body">
 				<h4 class="modal-title text-center" id="myModalLabel"><?php echo $product['title']; ?></h4> <br />
 				<div class="container-fluid">
+					<span id="modal-errors" class="bd-danger"></span>
 					<div class="row">
-						<span id="modal-errors" class="bd-danger"></span>
 						<div class="col-sm-6 fotorama">
 							<?php $photos = explode(',', $product['image']);
 							foreach($photos as $photo): ?>

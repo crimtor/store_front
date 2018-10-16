@@ -15,17 +15,17 @@
 ?>
 
 <div class="col-md-12">
-  <div class="row">
-    <h2 class="text-center">My Shopping Cart</h2> <hr>
+		<h2 class="text-center">My Shopping Cart</h2> <hr>
+		<div class="row">
     <?php if($cart_id == ''): ?>
-      <div class="bg-danger">
-        <p class="text-center text-danger">
+      <div class="col-md-12 bg-warning">
+        <p class="text-center text-danger font-weight-bold">
           Your Shopping Cart is Empty!
         </p>
       </div>
     <?php else: ?>
       <table class="table table-bordered table-condensed table-striped">
-        <thead><th>Item #</th><th>Item</th><th>Price</th><th>Quantity</th><th>Size</th><th>Sub Total</th></thead>
+        <thead><th>Remove</th><th>Item #</th><th>Item</th><th>Price</th><th>Quantity</th><th>Size</th><th>Sub Total</th></thead>
         <tbody>
           <?php foreach ($items as $item) {
             $product_id = $item['id'];
@@ -40,14 +40,15 @@
             }
             ?>
             <tr>
+							<td><button class="btn btn-xs btn-danger" onclick="update_cart('removeall', '<?=$product['id'];?>', '<?=$item['size'];?>');">X </button> </td>
               <td><?=$i;?></td>
               <td><?=$product['title'];?></td>
               <td><?=money($product['price']);?></td>
               <td>
-                <button class="btn btn-xs" onclick="update_cart('removeone', '<?=$product['id'];?>', '<?=$item['size'];?>');">-</button>
+                <button class="btn btn-xs btn-info" onclick="update_cart('removeone', '<?=$product['id'];?>', '<?=$item['size'];?>');">-</button>
                 <?=$item['quantity'];?>
                 <?php if($item['quantity'] < $available): ?>
-                <button class="btn btn-xs" onclick="update_cart('addone', '<?=$product['id'];?>', '<?=$item['size'];?>');">+</button>
+                <button class="btn btn-xs btn-info" onclick="update_cart('addone', '<?=$product['id'];?>', '<?=$item['size'];?>');">+</button>
               <?php else: ?>
                 <span class="text-danger"> Max Reached </span>
               <?php endif; ?>
@@ -78,8 +79,9 @@
       </table>
 
 <!-- Checkout button -->
-<button type="button" class="btn btn-primary btn-large pull-right" data-toggle="modal" data-target="#checkoutModal">
-  <span class="glyphicon glyphicon-shopping-cart"></span> Check Out
+<div class="col-md-10"></div>
+<button type="button" id="checkout_btn" class="btn btn-primary btn-large pull-right" data-toggle="modal" data-target="#checkoutModal">
+  <i class="fa fa-shopping-cart" aria-hidden="true"></i> Check Out
 </button>
 
 <!-- Modal -->
@@ -96,40 +98,46 @@
 
       <div class="modal-body">
         <div class="row">
+					<div class="col-md-12">
+						<span class="text-danger" id="payment-errors"></span>
           <form action="thankyou.php" method="post" id="payment-form">
-						<span class="bg-danger" id="payment-errors"></span>
 						<input type="hidden" name="tax" value="<?=$tax;?>">
 						<input type="hidden" name="sub_total" value="<?=$sub_total;?>">
 						<input type="hidden" name="grand_total" value="<?=$grand_total;?>">
 						<input type="hidden" name="cart_id" value="<?=$cart_id;?>">
 						<input type="hidden" name="description" value="<?=$item_count.' item'.(($item_count > 1)?'s':'').' from Shawns Place.';?>">
 						<div id="step1" style="display:block;">
+							<div class="form-row">
               <div class="form-group col-md-6">
-                <label for="full-name">Full Name: </label>
+                <label for="full-name">* Full Name: </label>
                 <input type="text" class="form-control" id="full-name" name="full-name">
               </div>
               <div class="form-group col-md-6">
-                <label for="email">Email: </label>
+                <label for="email">* Email: </label>
                 <input type="email" class="form-control" id="email" name="email">
               </div>
-              <div class="form-group col-md-6">
-                <label for="street">Street Address: </label>
+						</div>
+              <div class="form-group col-md-12">
+                <label for="street">* Street Address: </label>
                 <input type="text" class="form-control" id="street" name="street">
               </div>
-              <div class="form-group col-md-6">
+              <div class="form-group col-md-12">
                 <label for="street2">Street Address 2: </label>
                 <input type="text" class="form-control" id="street2" name="street2">
               </div>
+							<div class="form-row">
               <div class="form-group col-md-6">
-                <label for="city">City: </label>
+                <label for="city">* City: </label>
                 <input type="text" class="form-control" id="city" name="city">
               </div>
               <div class="form-group col-md-6">
-                <label for="state">State: </label>
+                <label for="state">* State: </label>
                 <input type="text" class="form-control" id="state" name="state">
               </div>
+						</div>
+						<div class="form-row">
               <div class="form-group col-md-6">
-                <label for="zip">Zip Code: </label>
+                <label for="zip">* Zip Code: </label>
                 <input type="text" class="form-control" id="zip" name="zip">
               </div>
               <div class="form-group col-md-6">
@@ -137,28 +145,30 @@
                 <input type="text" class="form-control" id="country" name="country">
               </div>
             </div>
+					</div>
             <div id="step2" style="display:none;">
+							<!-- Used to display Element errors. -->
+							<div id="card-errors" role="alert"></div>
 							<div class="form-row">
 								<label for="card-element">
-							      Credit or debit card
+							      Enter Credit or debit card info &nbsp
 							    </label>
-							    <div id="card-element">
+							    <div style="width: 30em" id="card-element">
 							      <!-- A Stripe Element will be inserted here. -->
 							    </div>
 
-							    <!-- Used to display Element errors. -->
-							    <div id="card-errors" role="alert"></div>
 							  	</div>
 							</div>
 						</div>
+					</div>
 
         </div>
 
       <div class="modal-footer">
+				<button type="button" id="back_button" class="btn btn-primary" style="display:none;" onclick="back_address();"> Back </button>
         <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-        <button type="button" id="back_button" class="btn btn-primary" style="display:none;" onclick="back_address();"> Back </button>
 				<button type="button" id="next_button" class="btn btn-primary" onclick="check_address();"> Next </button>
-				<button type="submit" id="checkout_button" class="btn btn-primary" style="display:none;"> Check Out </button>
+				<button type="submit" id="checkout_button" class="btn btn-success" style="display:none;"> Purchase </button>
       </div>
 			</form>
     </div>
@@ -223,7 +233,6 @@ var style = {
     // Add your base input styles here. For example:
     fontSize: '16px',
     color: "#32325d",
-		padding: '10px',
   }
 };
 
