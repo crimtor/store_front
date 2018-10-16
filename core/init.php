@@ -1,12 +1,13 @@
 <?php
-	$db = mysqli_connect('127.0.0.1', 'root', '', 'ecommerce_db');
+	require_once $_SERVER['DOCUMENT_ROOT'].'/my-php-shop/config.php';
+
+	$db = mysqli_connect(DB_HOST, DB_USER, DB_PASSWORD, DB_NAME);
 	session_start();
 	if(mysqli_connect_errno()) {
 		echo 'Database connection failed with following errors: '.mysqli_connect_error();
 		die();
 	}
 
-	require_once $_SERVER['DOCUMENT_ROOT'].'/my-php-shop/config.php';
 	require_once BASEURL.'helpers/helpers.php';
 	require BASEURL.'vendor/autoload.php';
 
